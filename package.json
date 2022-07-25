@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "start": "ts-node src/index.ts",
     "test": "jest"
   },
   "dependencies": {

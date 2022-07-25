@@ -140,6 +140,10 @@ export class NFT {
   ) {}
 
   get id() {
+    return this.typeScriptArguments;
+  }
+
+  get outpointId() {
     return `${this.outpoint.tx_hash}#${this.outpoint.index}`;
   }
 

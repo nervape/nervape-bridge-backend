@@ -1,13 +1,37 @@
 import { create, IPFSHTTPClient } from 'ipfs-http-client';
 import { CONFIG } from './config';
-import { readFile, writeFile } from 'fs/promises';
+import { access, mkdir, readFile, writeFile } from 'fs/promises';
 import path from 'path';
 
 export class MetadataStorage {
+    public initialized = false;
+
     private client: IPFSHTTPClient;
 
     constructor() {
         this.client = create({ url: CONFIG.IPFS_NODE });
+    }
+
+    async initialize() {
+        if (this.initialized) {
+            return;
+        }
+        
+        await this.checkAndCreateDataDirectory();
+        this.initialized = true;
+    }
+
+    getDataPath() {
+        return path.join(__dirname, CONFIG.DATA_LOCATION);
+    }
+
+    async checkAndCreateDataDirectory() {
+        const dataPath = this.getDataPath();
+        try {
+            await access(dataPath);
+        } catch (error) {
+            await mkdir(dataPath);
+        }
     }
 
     async storeFile(content: string) {

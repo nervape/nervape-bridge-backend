@@ -20,7 +20,8 @@ const PRIVATE_KEY =
   const pwcore = await new PWCore(CONFIG.CKB_NODE_RPC_URL).init(provider, collector);
 
   const bridge = new Bridge();
-  bridge.start();
+  await bridge.initialize();
+  await bridge.start();
 
   // const nftsAtBridgeAddress = await detectNFTsAtAddress(bridgeAddress);
 

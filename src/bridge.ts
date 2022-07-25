@@ -19,7 +19,10 @@ export class Bridge {
         null,
         LockType.pw
       ), private storage = new MetadataStorage()) {
-        
+    }
+
+    public async initialize() {
+      await this.storage.initialize();
     }
 
     public async start() {
