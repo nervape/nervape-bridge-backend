@@ -81,19 +81,6 @@ const NFTTypeArgs = struct(
   ["issuerId", "classId", "tokenId"]
 );
 
-// const NFTTypeArgs = struct(
-//   {
-//     issuerId: createFixedBytesCodec({
-//       byteLength: 20,
-//       pack: (hex) => bytes.bytify(hex),
-//       unpack: (buf) => bytes.hexify(buf),
-//     }),
-//     classId: Uint32BE,
-//     tokenId: Uint32BE,
-//   },
-//   ["issuerId", "classId", "tokenId"]
-// );
-
 const NFTClassCellData = struct(
   {
     version: Uint8,

@@ -23,6 +23,7 @@
     "@metamask/eth-sig-util": "^4.0.0",
     "buffer": "^6.0.3",
     "ckb-js-toolkit": "0.10.2",
+    "ethers": "^5.6.9",
     "ipfs-http-client": "56.0.3",
     "json-rpc-2.0": "^0.2.16",
     "node-fetch": "2.6.7"

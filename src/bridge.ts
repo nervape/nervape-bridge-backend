@@ -2,6 +2,7 @@ import { Address, AddressType, CkbIndexer, LockType, OutPoint } from "@lay2/pw-c
 import fetch from "node-fetch";
 
 import { CONFIG } from "./config";
+import { EVMBridge } from "./EVMBridge";
 import { CkbIndexerCell, NFT } from "./nft";
 import { MetadataStorage } from "./storage";
 
@@ -14,11 +15,11 @@ export class Bridge {
     public NFTStatuses = new Map<string, NFTBridgingStatus>();
 
     constructor(public address = new Address(
-        CONFIG.BRIDGE_ETH_ADDRESS,
+        CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
         AddressType.eth,
         null,
         LockType.pw
-      ), private storage = new MetadataStorage()) {
+      ), private storage = new MetadataStorage(), private evmBridge = new EVMBridge()) {
     }
 
     public async initialize() {
@@ -35,7 +36,7 @@ export class Bridge {
           if (this.shouldBridgeNFT(nft)) { 
             await this.bridgeNFT(nft);
 
-            // break; // stop after 1
+            break; // stop after 1
           }
         }
     }
@@ -44,15 +45,25 @@ export class Bridge {
         console.log(`Bridging NFT with id: ${nft.id}`);
         // console.log(`NFTCell data:`, nft.getData());
 
-        const metadata = await this.prepareStableNFTMetadata(nft);
-        // console.log(`NFT metadata: `, metadata);
-        const cid = await this.storage.storeFile(JSON.stringify(metadata));
-        console.log(`Stored with CID in IPFS: ${cid}`);
-        // console.log(`NFT type args: `, nft.getTypeScriptArguments());
-        await nft.getConnectedIssuer();
+        const typeScriptArgs = nft.getTypeScriptArguments();
+        if (await this.evmBridge.isClassContractCreated(typeScriptArgs.issuerId, typeScriptArgs.classId)) {
+          console.log(`MNFTClassContract already created.`);
+        } else {
+          const issuerAndClassId = nft.typeScriptArguments.slice(0, 50);
+          console.log(`Deploying MNFTClassContract for issuerAndClassId: ${issuerAndClassId}`);
+          await this.evmBridge.deployAndRegisterClassContract(issuerAndClassId, typeScriptArgs.issuerId, typeScriptArgs.classId);
+        }
 
-        // await nft.getConnectedClass();
-        // console.log(nft.getClassData());
+        if (await this.evmBridge.isNFTMintedAlready(typeScriptArgs.issuerId, typeScriptArgs.classId, typeScriptArgs.tokenId)) {
+          console.log('NFT minted already');
+        } else {
+          const metadata = await this.prepareStableNFTMetadata(nft);
+          // console.log(`NFT metadata: `, metadata);
+          const cid = await this.storage.storeFile(JSON.stringify(metadata));
+          console.log(`Stored with CID in IPFS: ${cid}`);
+
+          // mint
+        }  
 
         this.markNFTAsBridged(nft);
     }
@@ -136,15 +147,3 @@ export class Bridge {
           );
       }
 }
-
-/**
- * NFT minted on L2:
- * 
- * Data in IPFS:
- * {
- *  version: 0,
- *  characteristic: '0x0135b6bfbd85fc9a',
- *  configure: 192,
- *  state: 0
- * }
- */
