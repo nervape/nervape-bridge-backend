@@ -1,4 +1,4 @@
-import { providers, Contract, ContractFactory, constants, Wallet } from 'ethers';
+import { providers, Contract, ContractFactory, constants, Wallet, ContractReceipt } from 'ethers';
 import { MNFTBridgeABI } from './artifacts/MNFTBridgeArtifact';
 import { MNFTClassContractABI, MNFTClassContractBytecode } from './artifacts/MNFTClassContractArtifact';
 import { CONFIG } from './config';
@@ -58,21 +58,27 @@ export class EVMBridge {
         return nftContract;
     }
 
-    async isNFTMintedAlready(issuerId: string, classId: number, tokenId: number): Promise<boolean> {
+    async getNFTClassContract(issuerId: string, classId: number) {
         const isClassRegistered = await this.isClassContractCreated(issuerId, classId);
 
         if (!isClassRegistered) {
-            return false;
+            return null;
         }
 
         const classAddress = await this.getRegisteredClassContractAddress(issuerId, classId);
-        const contract = new Contract(classAddress, MNFTClassContractABI, this.wallet);
+        console.log(`MNFTClassContract address: ${classAddress}`);
+        return new Contract(classAddress, MNFTClassContractABI, this.wallet);
+    }
+
+    async isNFTMintedAlready(issuerId: string, classId: number, tokenId: number): Promise<boolean> {
+        const contract = await this.getNFTClassContract(issuerId, classId);
+
+        if (!contract) {
+            return false;
+        }
 
         try {
             const owner = await contract.ownerOf(tokenId);
-            console.log('nftowner', {
-                owner
-            });
 
             return owner !== constants.AddressZero;
         } catch (error: any) {
@@ -84,5 +90,18 @@ export class EVMBridge {
 
             throw error;
         }
+    }
+
+    async mintNFT(issuerId: string, classId: number, tokenId: number, toAddress: string, metadataURI: string): Promise<boolean | ContractReceipt> {
+        const contract = await this.getNFTClassContract(issuerId, classId);
+
+        if (!contract || await this.isNFTMintedAlready(issuerId, classId, tokenId)) {
+            return false;
+        }
+
+        const tx = await contract.safeMint(toAddress, tokenId, metadataURI);
+        const receipt = await tx.wait(2);
+
+        return receipt;
     }
 }

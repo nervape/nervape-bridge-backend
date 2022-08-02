@@ -1,3 +1,14 @@
+import dotenv from 'dotenv';
+import process from 'process';
+
+dotenv.config();
+
+const EVM_PRIVATE_KEY = process.env.EVM_PRIVATE_KEY;
+
+if (!EVM_PRIVATE_KEY) {
+    throw new Error('You need to pass EVM_PRIVATE_KEY environment variable.');
+}
+
 export const CONFIG = {
     CKB_NODE_RPC_URL: "https://testnet.ckb.dev/rpc",
     CKB_INDEXER_RPC_URL: "https://testnet.ckb.dev/indexer",
@@ -14,7 +25,7 @@ export const CONFIG = {
     EVM_CONTRACTS: {
         BRIDGE: '0x54B8d8E2455946f2A5B8982283f2359812e815ce'
     },
-    EVM_PRIVATE_KEY: '', // @TODO move to dotenv
+    EVM_PRIVATE_KEY,
 
     DATA_LOCATION: '../data',    
 }
