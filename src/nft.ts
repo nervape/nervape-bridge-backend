@@ -5,18 +5,17 @@ import {
   bytes,
   blockchain
 } from "@ckb-lumos/codec";
-import { BI, Script, helpers, utils, OutPoint, Output } from "@ckb-lumos/lumos";
+import { utils, OutPoint, Output, Input } from "@ckb-lumos/lumos";
 import fetch from "node-fetch";
 
 import { CONFIG } from "./config";
 import { BytesCodec } from "@ckb-lumos/codec/lib/base";
 import { concat } from "@ckb-lumos/codec/lib/bytes";
 import { assertMinBufferLength, assertBufferLength } from "@ckb-lumos/codec/lib/utils";
+import { Address, AddressPrefix, HashType, NervosAddressVersion, Script } from "@lay2/pw-core";
 
-const { struct, byteArrayOf, vector, byteVecOf, option, table } = molecule;
-const { Uint8, Uint16, Uint16LE, Uint16BE, Uint32, Uint32BE, Uint32LE, Uint64 } = number;
-const {  } = bytes;
-const { Bytes, BytesOpt } = blockchain;
+const { struct, option } = molecule;
+const { Uint8, Uint16BE, Uint32BE } = number;
 
 export function byteBEVecOf<T>(codec: BytesCodec<T>): BytesCodec<T> {
   return {
@@ -107,6 +106,11 @@ export type CkbIndexerCell = {
   output: Output;
   output_data: string;
   tx_index: string;
+}
+
+interface CommittedTransaction {
+  inputs: Input[];
+  outputs: Output[];
 }
 
 
@@ -321,5 +325,101 @@ export class NFT {
     if (!issuerCell) {
       throw new Error(`Can't find mNFT Issuer cell.`);
     }
+  }
+
+  async getCommittedTransaction(transactionHash: string): Promise<CommittedTransaction> {
+    // console.log(`[DEBUG] getCommittedTransaction`, {
+    //   transactionHash
+    // });
+
+    if (transactionHash.length !== 66) {
+      throw new Error(`Transaction hash length is invalid in getCommittedTransaction. Expected string of length 66, got: ${transactionHash.length}.`);
+    }
+    
+    const requestBody = {
+      id: 2,
+      jsonrpc: "2.0",
+      method: "get_transaction",
+      params: [transactionHash],
+    };
+    const response = await fetch(CONFIG.CKB_NODE_RPC_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody),
+    });
+    const result = await response.json();
+
+    if (result?.result?.tx_status?.status !== 'committed') {
+      throw new Error(`Transaction not in "committed" status. Transaction hash: "${transactionHash}".`);
+    }
+
+    return result?.result?.transaction;
+  }
+
+  async getReceivingEthereumAddress(): Promise<string | null> {
+    const transaction = await this.getCommittedTransaction(this.outpoint.tx_hash);
+
+    if (!await this.assertTransactionHasSingleSender(transaction)) {
+      console.debug(`[DEBUG] Can't get Receiving Ethereum Address. Transaction has multiple senders. Can't trust the output is coming from single mNFT sender.`);
+    }
+
+    /** 
+     * Transaction output should at least contain 2 cells:
+     * 1. mNFT cell
+     * 2. mNFT Receiving Ethereum Address cell (cell with no lock, only data with full mNFT id and Ethereum address)
+     */
+    if (transaction.outputs.length < 2) {
+      console.debug(`[DEBUG] Can't get Receiving Ethereum Address. Transaction with mNFT transfer has less than 2 outputs.`);
+      return null;
+    }
+
+    let address = null;
+
+    for (const transactionInput of transaction.inputs) {
+      const previousOutputTransaction = await this.getCommittedTransaction(transactionInput.previous_output.tx_hash);
+      const previousOutput = previousOutputTransaction.outputs[parseInt(transactionInput.previous_output.index, 16)];
+
+      if (!previousOutput) {
+        throw new Error(`Can't find previous output when fetching Receiving Ethereum Address.`);
+      }
+
+      if (previousOutput.type?.code_hash === CONFIG.MNFT_TYPE_CODE_HASH && previousOutput.type.args === this.typeScriptArguments) {
+        console.debug('[DEBUG] Found mNFT transfer previous output.');
+
+        if (previousOutput.lock.code_hash === CONFIG.UNIPASS_V2_CODE_HASH) {
+          console.debug('[DEBUG] Detected Unipass V2 lock. Searching for Receiving Ethereum Address Cell...');
+
+          console.log(transaction.outputs);
+        }
+      }
+    }
+
+    return address;
+  }
+
+  private async assertTransactionHasSingleSender(transaction: CommittedTransaction): Promise<boolean> {
+    if (transaction.inputs.length === 0) {
+      throw new Error(`Transaction must have at least 1 input.`);
+    }
+
+    let previousSenderAddress: string | null = null;
+    for (const transactionInput of transaction.inputs) {
+      const previousOutputTransaction = await this.getCommittedTransaction(transactionInput.previous_output.tx_hash);
+      const previousOutput = previousOutputTransaction.outputs[parseInt(transactionInput.previous_output.index, 16)];
+
+      const senderAddress = Address.fromLockScript(
+        new Script(previousOutput.lock.code_hash, previousOutput.lock.args, previousOutput.lock.hash_type as HashType),
+        AddressPrefix.Testnet,
+        NervosAddressVersion.latest
+      );
+
+      if (previousSenderAddress === null) {
+        previousSenderAddress = senderAddress.addressString;
+      } else if (previousSenderAddress !== senderAddress.addressString) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

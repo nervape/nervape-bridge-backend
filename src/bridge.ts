@@ -45,6 +45,16 @@ export class Bridge {
         console.log(`Bridging NFT with id: ${nft.id}`);
         // console.log(`NFTCell data:`, nft.getData());
 
+        const receiverEthereumAddress = await nft.getReceivingEthereumAddress();
+        // console.log({
+        //   receiverEthereumAddress
+        // });
+
+        if (!receiverEthereumAddress) {
+          console.log(`Can't bridge NFT. No Receiving Ethereum Address found. [NFT ID: "${nft.id}"]`);
+          return;
+        }
+
         const typeScriptArgs = nft.getTypeScriptArguments();
         if (await this.evmBridge.isClassContractCreated(typeScriptArgs.issuerId, typeScriptArgs.classId)) {
           console.log(`MNFTClassContract already created.`);
@@ -69,7 +79,7 @@ export class Bridge {
           if (typeof(receipt) !== 'boolean') {
             console.log(`Minted NFT on EVM side. Transaction hash: ${receipt.transactionHash}`);
           }
-        }  
+        }
 
         this.markNFTAsBridged(nft);
     }
