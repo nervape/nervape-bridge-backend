@@ -111,11 +111,12 @@ export type CkbIndexerCell = {
 interface CommittedTransaction {
   inputs: Input[];
   outputs: Output[];
+  outputs_data: string[];
 }
 
-
-// type NFTCellUnpackType = typeof NFTCell.unpack;
-// type NFTCellUnpackReturnType = ReturnType<NFTCellUnpackType>;
+const MNFT_TYPE_ARGS_LENGTH = 56;
+const ETHEREUM_ADDRESS_LENGTH = 40;
+const EXPECTED_ADDRESS_CELL_DATA_LENGTH = MNFT_TYPE_ARGS_LENGTH + ETHEREUM_ADDRESS_LENGTH + 2; // 2 for 0x    
 
 // Map<Issuer Type Hash, Issuer Cell>
 const ISSUER_CELLS_MAP = new Map<string, CkbIndexerCell>();
@@ -371,9 +372,7 @@ export class NFT {
     if (transaction.outputs.length < 2) {
       console.debug(`[DEBUG] Can't get Receiving Ethereum Address. Transaction with mNFT transfer has less than 2 outputs.`);
       return null;
-    }
-
-    let address = null;
+    }    
 
     for (const transactionInput of transaction.inputs) {
       const previousOutputTransaction = await this.getCommittedTransaction(transactionInput.previous_output.tx_hash);
@@ -389,12 +388,19 @@ export class NFT {
         if (previousOutput.lock.code_hash === CONFIG.UNIPASS_V2_CODE_HASH) {
           console.debug('[DEBUG] Detected Unipass V2 lock. Searching for Receiving Ethereum Address Cell...');
 
-          console.log(transaction.outputs);
+          for (const [index, output] of transaction.outputs.entries()) {
+            const outputData = transaction.outputs_data[index];
+
+            
+            if (!output.type && outputData?.length === EXPECTED_ADDRESS_CELL_DATA_LENGTH && outputData.slice(0, MNFT_TYPE_ARGS_LENGTH + 2) === this.typeScriptArguments) {
+              return `0x${outputData.slice(MNFT_TYPE_ARGS_LENGTH + 2, EXPECTED_ADDRESS_CELL_DATA_LENGTH)}`;
+            }
+          }
         }
       }
     }
 
-    return address;
+    return null;
   }
 
   private async assertTransactionHasSingleSender(transaction: CommittedTransaction): Promise<boolean> {

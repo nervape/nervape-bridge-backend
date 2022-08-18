@@ -73,8 +73,7 @@ export class Bridge {
           console.log(`Stored with CID in IPFS: ${cid}`);
 
           // mint
-          const DUMMY_TO_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
-          const receipt = await this.evmBridge.mintNFT(typeScriptArgs.issuerId, typeScriptArgs.classId, typeScriptArgs.tokenId, DUMMY_TO_ADDRESS, cid.toString());
+          const receipt = await this.evmBridge.mintNFT(typeScriptArgs.issuerId, typeScriptArgs.classId, typeScriptArgs.tokenId, receiverEthereumAddress, cid.toString());
 
           if (typeof(receipt) !== 'boolean') {
             console.log(`Minted NFT on EVM side. Transaction hash: ${receipt.transactionHash}`);
