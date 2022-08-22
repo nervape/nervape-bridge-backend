@@ -13,6 +13,7 @@ import { BytesCodec } from "@ckb-lumos/codec/lib/base";
 import { concat } from "@ckb-lumos/codec/lib/bytes";
 import { assertMinBufferLength, assertBufferLength } from "@ckb-lumos/codec/lib/utils";
 import { Address, AddressPrefix, HashType, NervosAddressVersion, Script } from "@lay2/pw-core";
+import { logger } from "ethers";
 
 const { struct, option } = molecule;
 const { Uint8, Uint16BE, Uint32BE } = number;
@@ -329,10 +330,6 @@ export class NFT {
   }
 
   async getCommittedTransaction(transactionHash: string): Promise<CommittedTransaction> {
-    // console.log(`[DEBUG] getCommittedTransaction`, {
-    //   transactionHash
-    // });
-
     if (transactionHash.length !== 66) {
       throw new Error(`Transaction hash length is invalid in getCommittedTransaction. Expected string of length 66, got: ${transactionHash.length}.`);
     }
@@ -361,7 +358,7 @@ export class NFT {
     const transaction = await this.getCommittedTransaction(this.outpoint.tx_hash);
 
     if (!await this.assertTransactionHasSingleSender(transaction)) {
-      console.debug(`[DEBUG] Can't get Receiving Ethereum Address. Transaction has multiple senders. Can't trust the output is coming from single mNFT sender.`);
+      logger.debug(`Can't get Receiving Ethereum Address. Transaction has multiple senders. Can't trust the output is coming from single mNFT sender.`)
     }
 
     /** 
@@ -370,7 +367,7 @@ export class NFT {
      * 2. mNFT Receiving Ethereum Address cell (cell with no lock, only data with full mNFT id and Ethereum address)
      */
     if (transaction.outputs.length < 2) {
-      console.debug(`[DEBUG] Can't get Receiving Ethereum Address. Transaction with mNFT transfer has less than 2 outputs.`);
+      logger.debug(`Can't get Receiving Ethereum Address. Transaction with mNFT transfer has less than 2 outputs.`);
       return null;
     }    
 
@@ -383,10 +380,10 @@ export class NFT {
       }
 
       if (previousOutput.type?.code_hash === CONFIG.MNFT_TYPE_CODE_HASH && previousOutput.type.args === this.typeScriptArguments) {
-        console.debug('[DEBUG] Found mNFT transfer previous output.');
+        logger.debug('Found mNFT transfer previous output.');
 
         if (previousOutput.lock.code_hash === CONFIG.UNIPASS_V2_CODE_HASH) {
-          console.debug('[DEBUG] Detected Unipass V2 lock. Searching for Receiving Ethereum Address Cell...');
+          logger.debug('Detected Unipass V2 lock. Searching for Receiving Ethereum Address Cell...');
 
           for (const [index, output] of transaction.outputs.entries()) {
             const outputData = transaction.outputs_data[index];

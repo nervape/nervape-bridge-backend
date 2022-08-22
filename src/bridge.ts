@@ -3,6 +3,7 @@ import fetch from "node-fetch";
 
 import { CONFIG } from "./config";
 import { EVMBridge } from "./EVMBridge";
+import { logger } from "./logger";
 import { CkbIndexerCell, NFT } from "./nft";
 import { MetadataStorage } from "./storage";
 
@@ -27,56 +28,52 @@ export class Bridge {
     }
 
     public async start() {
+      while (true) {
+        logger.info('Starting new search for pending mNFTs...');
         const nfts = await this.getPendingNFTs();
-        // console.log({
-        //     nfts
-        // });
 
         for (const nft of nfts) {
           if (this.shouldBridgeNFT(nft)) { 
             await this.bridgeNFT(nft);
-
-            // break; // stop after 1
           }
         }
+
+        await new Promise(r => setTimeout(r, 60000));
+      }
     }
 
     async bridgeNFT(nft: NFT) {
-        console.log(`Bridging NFT with id: ${nft.id}`);
-        // console.log(`NFTCell data:`, nft.getData());
+        logger.debug(`Checking status of mNFT with id: ${nft.id}`);
 
         const receiverEthereumAddress = await nft.getReceivingEthereumAddress();
-        // console.log({
-        //   receiverEthereumAddress
-        // });
 
         if (!receiverEthereumAddress) {
-          console.log(`Can't bridge NFT. No Receiving Ethereum Address found. [NFT ID: "${nft.id}"]`);
+          logger.info(`Can't bridge NFT. No Receiving Ethereum Address found. [NFT ID: "${nft.id}"]`);
           return;
         }
 
         const typeScriptArgs = nft.getTypeScriptArguments();
         if (await this.evmBridge.isClassContractCreated(typeScriptArgs.issuerId, typeScriptArgs.classId)) {
-          console.log(`MNFTClassContract already created.`);
+          logger.debug(`MNFTClassContract already created.`);
         } else {
           const issuerAndClassId = nft.typeScriptArguments.slice(0, 50);
-          console.log(`Deploying MNFTClassContract for issuerAndClassId: ${issuerAndClassId}`);
+          logger.info(`Deploying MNFTClassContract for issuerAndClassId: ${issuerAndClassId}`);
           await this.evmBridge.deployAndRegisterClassContract(issuerAndClassId, typeScriptArgs.issuerId, typeScriptArgs.classId);
         }
 
         if (await this.evmBridge.isNFTMintedAlready(typeScriptArgs.issuerId, typeScriptArgs.classId, typeScriptArgs.tokenId)) {
-          console.log('NFT minted already');
+          logger.debug('NFT minted already');
         } else {
           const metadata = await this.prepareStableNFTMetadata(nft);
           // console.log(`NFT metadata: `, metadata);
           const cid = await this.storage.storeFile(JSON.stringify(metadata));
-          console.log(`Stored with CID in IPFS: ${cid}`);
+          logger.debug(`Stored with CID in IPFS: ${cid}`);
 
           // mint
           const receipt = await this.evmBridge.mintNFT(typeScriptArgs.issuerId, typeScriptArgs.classId, typeScriptArgs.tokenId, receiverEthereumAddress, cid.toString());
 
           if (typeof(receipt) !== 'boolean') {
-            console.log(`Minted NFT on EVM side. Transaction hash: ${receipt.transactionHash}`);
+            logger.info(`Minted NFT on EVM side. Transaction hash: ${receipt.transactionHash}`);
           }
         }
 
@@ -128,7 +125,7 @@ export class Bridge {
     }
 
     async getNFTsAtAddress(address: Address): Promise<NFT[]> {
-        console.log(`Searching for mNFTs at address: ${address.toCKBAddress()}`);
+        logger.info(`Searching for mNFTs at address: ${address.toCKBAddress()}`);
         const addressLockScript = address.toLockScript().serializeJson();
         const response = await fetch(CONFIG.CKB_INDEXER_RPC_URL, {
           method: "POST",

@@ -2,6 +2,7 @@ import { providers, Contract, ContractFactory, constants, Wallet, ContractReceip
 import { MNFTBridgeABI } from './artifacts/MNFTBridgeArtifact';
 import { MNFTClassContractABI, MNFTClassContractBytecode } from './artifacts/MNFTClassContractArtifact';
 import { CONFIG } from './config';
+import { logger } from './logger';
 
 export class EVMBridge {
     public bridgeContract?: Contract;
@@ -66,7 +67,7 @@ export class EVMBridge {
         }
 
         const classAddress = await this.getRegisteredClassContractAddress(issuerId, classId);
-        console.log(`MNFTClassContract address: ${classAddress}`);
+        logger.info(`MNFTClassContract address: ${classAddress}`);
         return new Contract(classAddress, MNFTClassContractABI, this.wallet);
     }
 

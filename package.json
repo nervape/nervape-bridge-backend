@@ -27,7 +27,8 @@
     "ethers": "^5.6.9",
     "ipfs-http-client": "56.0.3",
     "json-rpc-2.0": "^0.2.16",
-    "node-fetch": "2.6.7"
+    "node-fetch": "2.6.7",
+    "winston": "~3.8.1"
   },
   "devDependencies": {
     "@types/elliptic": "^6.4.13",
