@@ -15,7 +15,7 @@ import { assertMinBufferLength, assertBufferLength } from "@ckb-lumos/codec/lib/
 import { Address, AddressPrefix, HashType, NervosAddressVersion, Script } from "@lay2/pw-core";
 import { logger } from "ethers";
 
-const { struct, option } = molecule;
+const { struct } = molecule;
 const { Uint8, Uint16BE, Uint32BE } = number;
 
 export function byteBEVecOf<T>(codec: BytesCodec<T>): BytesCodec<T> {
@@ -46,13 +46,6 @@ enum NFTCellConfigureFlags {
   DestructibleBeforeClaim,
   DestructibleAfterClaim,
 }
-
-const UTF8String = byteBEVecOf<string>({
-  pack: (str) => Uint8Array.from(Buffer.from(str, "utf8")),
-  unpack: (buf) => Buffer.from(buf).toString("utf8"),
-});
-
-const DescOpt = option(UTF8String);
 
 const NFTCell = struct(
   {

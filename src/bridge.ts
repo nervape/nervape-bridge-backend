@@ -9,7 +9,8 @@ import { MetadataStorage } from "./storage";
 
 enum NFTBridgingStatus {
     Pending,
-    Bridged
+    Invalid,
+    Bridged,
 }
 
 export class Bridge {
@@ -29,16 +30,18 @@ export class Bridge {
 
     public async start() {
       while (true) {
-        logger.info('Starting new search for pending mNFTs...');
+        logger.debug('Starting new search for pending mNFTs...');
         const nfts = await this.getPendingNFTs();
 
-        for (const nft of nfts) {
-          if (this.shouldBridgeNFT(nft)) { 
-            await this.bridgeNFT(nft);
-          }
+        if (nfts.length !== 0) {
+          logger.info(`Found ${nfts.length} mNFTs to be processed.`);
         }
 
-        await new Promise(r => setTimeout(r, 60000));
+        for (const nft of nfts) {
+          await this.bridgeNFT(nft);
+        }
+
+        await new Promise(r => setTimeout(r, 300000));
       }
     }
 
@@ -49,6 +52,7 @@ export class Bridge {
 
         if (!receiverEthereumAddress) {
           logger.info(`Can't bridge NFT. No Receiving Ethereum Address found. [NFT ID: "${nft.id}"]`);
+          this.NFTStatuses.set(nft.id, NFTBridgingStatus.Invalid);
           return;
         }
 
@@ -77,19 +81,17 @@ export class Bridge {
           }
         }
 
-        this.markNFTAsBridged(nft);
+        this.NFTStatuses.set(nft.id, NFTBridgingStatus.Bridged);
     }
 
-    getPendingNFTs(): Promise<NFT[]> {
-        return this.getNFTsAtAddress(this.address);
+    async getPendingNFTs(): Promise<NFT[]> {
+        const list = await this.getNFTsAtAddress(this.address);
+
+        return list.filter(i => this.isNFTPendingCheck(i));
     }
 
-    shouldBridgeNFT(nft: NFT) {
+    isNFTPendingCheck(nft: NFT) {
       return !this.NFTStatuses.get(nft.id) || this.NFTStatuses.get(nft.id) === NFTBridgingStatus.Pending;
-    }
-
-    markNFTAsBridged(nft: NFT) {
-      this.NFTStatuses.set(nft.id, NFTBridgingStatus.Bridged)
     }
 
     async prepareStableNFTMetadata(nft: NFT) {
@@ -125,7 +127,7 @@ export class Bridge {
     }
 
     async getNFTsAtAddress(address: Address): Promise<NFT[]> {
-        logger.info(`Searching for mNFTs at address: ${address.toCKBAddress()}`);
+        logger.debug(`Searching for mNFTs at address: ${address.toCKBAddress()}`);
         const addressLockScript = address.toLockScript().serializeJson();
         const response = await fetch(CONFIG.CKB_INDEXER_RPC_URL, {
           method: "POST",
