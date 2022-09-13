@@ -1,16 +1,22 @@
 import { Schema, model, connect } from 'mongoose';
-import { Address, AddressType, CkbIndexer, LockType, OutPoint, parseAddress, LumosConfigs } from "@lay2/pw-core";
+import PWCore, { Address, ChainID, AddressType, CHAIN_SPECS, CkbIndexer, LockType, OutPoint, parseAddress, LumosConfigs } from "@lay2/pw-core";
 import { CONFIG } from "./config";
 import { CkbIndexerGroupedTransaction, BridgingStatus, BridgingTransaction } from "./types"
 import { getBridgingTransactions } from "./rpc"
 
+if(CONFIG.CHAIN_NETWORK === 'mainnet') {
+  PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb])
+} else {
+  PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb_testnet])
+}
+
 export class BridgingDetector {
     constructor(public address = new Address(
         // CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
-        CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
-        AddressType.ckb,
+        CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
+        AddressType.eth,
         null,
-        LockType.pw
+        LockType.omni // LockType.pw
       )) {
     }
 
