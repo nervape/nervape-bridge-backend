@@ -1,4 +1,4 @@
-import { Address, AddressType, CkbIndexer, LockType, OutPoint } from "@lay2/pw-core";
+import { Address, AddressType, CkbIndexer, LockType, OutPoint, parseAddress, LumosConfigs } from "@lay2/pw-core";
 import fetch from "node-fetch";
 
 import { CONFIG } from "./config";
@@ -6,6 +6,9 @@ import { EVMBridge } from "./EVMBridge";
 import { logger } from "./logger";
 import { CkbIndexerCell, NFT } from "./nft";
 import { MetadataStorage } from "./storage";
+
+import { helpers, config } from "@ckb-lumos/lumos";
+
 
 enum NFTBridgingStatus {
     Pending,
@@ -17,11 +20,17 @@ export class Bridge {
     public NFTStatuses = new Map<string, NFTBridgingStatus>();
 
     constructor(public address = new Address(
-        CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
-        AddressType.eth,
+        // CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
+        CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
+        AddressType.ckb,
         null,
         LockType.pw
       ), private storage = new MetadataStorage(), private evmBridge = new EVMBridge()) {
+
+      // console.log(LumosConfigs[1])
+      // const config = LumosConfigs[1]
+      const script = helpers.addressToScript("ckt1q3uljza4azfdsrwjzdpea6442yfqadqhv7yzfu5zknlmtusm45hpuqwt3cvvkfuwjf6gj4fsgcwuu234sd9pyrsqs02amv", { config: config.predefined.AGGRON4 })
+      console.log(script)
     }
 
     public async initialize() {
@@ -37,9 +46,9 @@ export class Bridge {
           logger.info(`Found ${nfts.length} mNFTs to be processed.`);
         }
 
-        for (const nft of nfts) {
-          await this.bridgeNFT(nft);
-        }
+        // for (const nft of nfts) {
+        //   await this.bridgeNFT(nft);
+        // }
 
         await new Promise(r => setTimeout(r, 300000));
       }
@@ -129,6 +138,7 @@ export class Bridge {
     async getNFTsAtAddress(address: Address): Promise<NFT[]> {
         logger.debug(`Searching for mNFTs at address: ${address.toCKBAddress()}`);
         const addressLockScript = address.toLockScript().serializeJson();
+        console.log(addressLockScript)
         const response = await fetch(CONFIG.CKB_INDEXER_RPC_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -141,12 +151,17 @@ export class Bridge {
                 script: addressLockScript,
                 script_type: "lock",
               },
-              "asc",
+              "desc",
               "0x64",
             ],
           }),
         });
         const result = await response.json();
+
+        console.log(JSON.stringify(result.result.objects))
+
+        const args = result.result.objects.map((o: CkbIndexerCell) => o.output.type?.args)
+        console.log('result', args)
       
         return (result.result.objects as CkbIndexerCell[])
           .filter(o => o.output.type?.code_hash === CONFIG.MNFT_TYPE_CODE_HASH)

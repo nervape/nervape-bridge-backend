@@ -1,0 +1,48 @@
+import { Schema, model, connect } from 'mongoose';
+import { Address, AddressType, CkbIndexer, LockType, OutPoint, parseAddress, LumosConfigs } from "@lay2/pw-core";
+import { CONFIG } from "./config";
+import { CkbIndexerGroupedTransaction, BridgingStatus, BridgingTransaction } from "./types"
+import { getBridgingTransactions } from "./rpc"
+
+export class BridgingDetector {
+    constructor(public address = new Address(
+        // CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
+        CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
+        AddressType.ckb,
+        null,
+        LockType.pw
+      )) {
+    }
+
+    public async start() {
+      await connect(CONFIG.MONGODB_CONNECTION_URL);
+      console.log("connected to database")
+
+      while (true) {
+        console.log('Searching for bridging transactions...');
+        let transactions;
+        try {
+          transactions = await getBridgingTransactions(this.address);
+        } catch(e) {
+          console.log("RPC error = ", e)
+          continue
+        }
+
+        console.log('Find %d bridging transactions', transactions.length);
+
+        for (const transaction of transactions) {
+          const dbTx = await BridgingTransaction.findOne({ from_chain_tx_hash: transaction.tx_hash })
+          if(!dbTx) {
+            const tx = new BridgingTransaction({
+              from_chain_block_number: transaction.block_number,
+              from_chain_tx_hash: transaction.tx_hash,
+              status: BridgingStatus.FROM_CHAIN_COMMITTED,
+              submitted_at: Date.now()
+            })
+            await tx.save()
+          }
+        }
+        await new Promise(r => setTimeout(r, 10000));
+      }
+    }
+}

@@ -11,7 +11,7 @@
     "declaration": true,
     "strict": true,
     "target": "ES2019",
-    "outDir": "lib",
+    "outDir": "build",
     "rootDir": "src",
     "types": [
       "jest"

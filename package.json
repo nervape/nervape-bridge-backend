@@ -9,7 +9,12 @@
   ],
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/index.ts",
+    "start:detector": "ts-node src/scripts/detector.ts",
+    "start:parser": "ts-node src/scripts/parser.ts",
+    "start:minter": "ts-node src/scripts/minter.ts",
+    "start:prod:detector": "node build/scripts/detector.js",
+    "start:prod:parser": "node build/scripts/parser.js",
+    "start:prod:minter": "node build/scripts/minter.js",
     "test": "jest"
   },
   "dependencies": {
@@ -25,8 +30,11 @@
     "ckb-js-toolkit": "0.10.2",
     "dotenv": "^16.0.1",
     "ethers": "^5.6.9",
+    "https-proxy-agent": "^5.0.1",
     "ipfs-http-client": "56.0.3",
     "json-rpc-2.0": "^0.2.16",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.5.4",
     "node-fetch": "2.6.7",
     "winston": "~3.8.1"
   },
