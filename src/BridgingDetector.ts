@@ -13,10 +13,10 @@ if(CONFIG.CHAIN_NETWORK === 'mainnet') {
 export class BridgingDetector {
     constructor(public address = new Address(
         // CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
-        CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
-        AddressType.eth,
+        CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
+        AddressType.ckb,
         null,
-        LockType.omni // LockType.pw
+        LockType.pw // LockType.pw
       )) {
     }
 
