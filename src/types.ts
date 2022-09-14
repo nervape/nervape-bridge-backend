@@ -39,6 +39,12 @@ export interface BridgingClassDict {
 
 export const BRIDGING_CLASS_DICT: BridgingClassDict = {
   12: { to_chain_class_type: 'character', to_chain_class_id: 18 },
+  1: { to_chain_class_type: 'character', to_chain_class_id: 2 },
+  2: { to_chain_class_type: 'character', to_chain_class_id: 3 },
+  3: { to_chain_class_type: 'character', to_chain_class_id: 4 },
+  4: { to_chain_class_type: 'character', to_chain_class_id: 5 },
+  5: { to_chain_class_type: 'character', to_chain_class_id: 6 },
+  6: { to_chain_class_type: 'character', to_chain_class_id: 7 },
   7: { to_chain_class_type: 'scene', to_chain_class_id: 2 },
 }
 
