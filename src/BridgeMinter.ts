@@ -45,9 +45,7 @@ export class BridgeMinter {
         const itemIds = dbTx.tokens.filter(t => t.to_chain_class_type === 'item').map(t => t.to_chain_token_id || 0)
         const toAddress = dbTx.to_chain_address || ''
 
-        console.log("characterIds = ", characterIds)
-        console.log("sceneIds = ", sceneIds)
-        console.log("itemIds = ", itemIds)
+        console.log("tokenIds = ", characterIds, sceneIds, itemIds)
 
         try {
             const receipt = await this.mintMany(toAddress, characterIds, sceneIds, itemIds)
@@ -60,7 +58,7 @@ export class BridgeMinter {
             }
         } catch(error: any) {
             const reason = error?.error?.reason || error.message
-            console.log(reason)
+            console.log(error)
             dbTx.status = BridgingStatus.TO_CHAIN_MINT_FAILED
             dbTx.to_chain_error = reason
             await dbTx.save()

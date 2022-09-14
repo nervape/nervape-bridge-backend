@@ -20,13 +20,13 @@ services:
     volumes:
       - ./:/home/node/app
     command: /bin/bash -c "yarn && yarn run build && yarn run start:prod:parser"
-  # nervape_bridge_minter:
-  #   container_name: nervape_bridge_minter
-  #   image: "node:16"
-  #   user: "node"
-  #   working_dir: /home/node/app
-  #   environment:
-  #     - NODE_ENV=development
-  #   volumes:
-  #     - ./:/home/node/app
-  #   command: /bin/bash -c "yarn && yarn run build && yarn run start:prod:minter"
+  nervape_bridge_minter:
+    container_name: nervape_bridge_minter
+    image: "node:16"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./:/home/node/app
+    command: /bin/bash -c "yarn && yarn run build && yarn run start:prod:minter"
