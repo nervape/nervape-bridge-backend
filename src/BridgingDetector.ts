@@ -12,12 +12,13 @@ if(CONFIG.CHAIN_NETWORK === 'mainnet') {
 
 export class BridgingDetector {
     constructor(public address = new Address(
-        // CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
-        CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
-        AddressType.ckb,
+        CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
+        // CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
+        AddressType.eth,
         null,
         LockType.pw // LockType.pw
       )) {
+      console.log(this.address.toCKBAddress())
     }
 
     public async start() {
@@ -37,6 +38,7 @@ export class BridgingDetector {
         console.log('Find %d bridging transactions', transactions.length);
 
         for (const transaction of transactions) {
+          console.log("transaction=", transaction.tx_hash)
           const dbTx = await BridgingTransaction.findOne({ from_chain_tx_hash: transaction.tx_hash })
           if(!dbTx) {
             const tx = new BridgingTransaction({
