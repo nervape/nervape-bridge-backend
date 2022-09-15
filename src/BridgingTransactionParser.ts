@@ -81,7 +81,7 @@ class BridgingNFTs {
   static getBridgingTokens(cells: Cell[]) {
     return cells.filter(cell => cell.cell_output.type && BridgingNFTs.isMNFTCell(cell)).map(cell => {
       const { issuerId, classId, tokenId } = MNFTArgs.unpack(bytes.bytify(cell.cell_output.type?.args || ''))
-      if(!BRIDGING_CLASS_DICT[classId]) throw new Error("Invalid class id");
+      if(!BRIDGING_CLASS_DICT[classId]) throw new Error(`Invalid class id ${classId}`);
       
       return {
         from_chain_class_id: classId,
