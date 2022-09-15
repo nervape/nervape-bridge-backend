@@ -4,12 +4,12 @@ import { CONFIG } from "./config";
 import { CkbIndexerGroupedTransaction, BridgingStatus, BridgingTransaction } from "./types"
 import { getBridgingTransactions } from "./rpc"
 
+
 if(CONFIG.CHAIN_NETWORK === 'mainnet') {
   PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb])
 } else {
   PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb_testnet])
 }
-
 export class BridgingDetector {
     constructor(public address = new Address(
         CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,

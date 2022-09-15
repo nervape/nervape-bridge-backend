@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import process from 'process'
-import path from 'path'
+// import path from 'path'
+import { BridgingClassDict } from './types'
 
 dotenv.config();
 
@@ -9,6 +10,177 @@ const EVM_PRIVATE_KEY = process.env.EVM_PRIVATE_KEY;
 if (!EVM_PRIVATE_KEY) {
     throw new Error('You need to pass EVM_PRIVATE_KEY environment variable.');
 }
+
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b0000000d Magic Ball
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b0000000c nervape test nft
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b Echo Test
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b 3d
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b Nervape-Mint-Test-3D
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b0000000b Nervape / Mirana Special
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b0000000a mNFT-test-4
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b mNFT-test-2
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b mNFT-test-1
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b mNFT-mock-0
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b 2022-05-16-18-57-05.484-3d
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b 2022-05-16-18-46-06.010-mnft
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b00000009 2022-04-27-16-48-12.280-mnft
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b00000008 Nervape 3D
+// 0x53b9a6b381e5f02408ab81bea5462c179f475b7b00000001 Nervape Test 007
+const TESTNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
+  1: {
+      from_chain_class_name: "Nervape Test 007",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 2 
+  },
+  2: { 
+      from_chain_class_name: "",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 3 
+  },
+  3: { 
+      from_chain_class_name: "",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 4 
+  },
+  4: { 
+      from_chain_class_name: "",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 5 
+  },
+  5: { 
+      from_chain_class_name: "",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 6 
+  },
+  6: { 
+      from_chain_class_name: "",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 7 
+  },
+  7: { 
+      from_chain_class_name: "",
+      to_chain_class_type: 'scene', 
+      to_chain_class_id: 2 
+  },
+  8: { 
+      from_chain_class_name: "Nervape 3D",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 8 
+  },
+  9: { 
+      from_chain_class_name: "2022-04-27-16-48-12.280-mnft",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 9 
+  },
+  10: { 
+      from_chain_class_name: "mNFT-test-4",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 10 
+  },
+  11: { 
+      from_chain_class_name: "Nervape / Mirana Special",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 11 
+  },
+  12: { 
+      from_chain_class_name: "nervape test nft",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 18 
+  },
+  13: { 
+      from_chain_class_name: "Magic Ball",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 14 
+  },
+}
+
+
+// 0x34d5b504e5b30b88843462146da44a92be0ed0830000000b Nervape / Mirana Special
+// 0x34d5b504e5b30b88843462146da44a92be0ed0830000000a Nervape / B-Boat
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000009 Nervape / B-Book
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000008 Nervape / Story 001
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000007 Groovy Party
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000006 Nervape / GROOVY DeFier
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000005 Nervape / GROOVY Researcher
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000004 Nervape / GROOVY NFTer
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000003 Nervape / GROOVY Miner
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000002 Nervape / GROOVY Whale
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000000 Nervape / GROOVY Rookie
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000001 Nervape / GROOVY Developer
+
+const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
+  0: { 
+      from_chain_class_name: "Nervape / GROOVY Rookie", 
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 1 
+  },
+  1: {
+      from_chain_class_name: "Nervape / GROOVY Developer",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 2 
+  },
+  2: { 
+      from_chain_class_name: "Nervape / GROOVY Whale",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 3 
+  },
+  3: { 
+      from_chain_class_name: "Nervape / GROOVY Miner",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 4 
+  },
+  4: { 
+      from_chain_class_name: "Nervape / GROOVY NFTer",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 5 
+  },
+  5: { 
+      from_chain_class_name: "Nervape / GROOVY Researcher",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 6 
+  },
+  6: { 
+      from_chain_class_name: "Nervape / GROOVY DeFier",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 7 
+  },
+
+
+  // [------------- scene -------------
+  7: { 
+      from_chain_class_name: "Groovy Party",
+      to_chain_class_type: 'scene', 
+      to_chain_class_id: 1 
+  },
+  8: { 
+      from_chain_class_name: "Nervape / Story 001",
+      to_chain_class_type: 'scene', 
+      to_chain_class_id: 2 
+  },
+  // [------------- scene -------------]
+
+
+  // [------------- item --------------
+  9: { 
+      from_chain_class_name: "Nervape / B-Book",
+      to_chain_class_type: 'item', 
+      to_chain_class_id: 1 
+  },
+  10: { 
+      from_chain_class_name: "Nervape / B-Boat",
+      to_chain_class_type: 'item', 
+      to_chain_class_id: 10 
+  },
+  // ------------- item --------------]
+
+  11: { 
+      from_chain_class_name: "Nervape / Mirana Special",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 8 
+  },
+}
+
+export const BRIDGING_CLASS_DICT = process.env.CHAIN_NETWORK === "mainnet" ? MAINNET_BRIDGING_CLASS_DICT : TESTNET_BRIDGING_CLASS_DICT
 
 export const CONFIG = {
     CHAIN_NETWORK: process.env.CHAIN_NETWORK as string,

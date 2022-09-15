@@ -54,6 +54,7 @@ export class BridgeMinter {
                 dbTx.status = BridgingStatus.BRIDGED
                 dbTx.to_chain_block_number = receipt.blockNumber
                 dbTx.to_chain_tx_hash = receipt.transactionHash
+                dbTx.completed_at = Date.now()
                 await dbTx.save()
             }
         } catch(error: any) {

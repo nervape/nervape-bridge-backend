@@ -1,9 +1,6 @@
 import _ from 'lodash';
 import { Schema, model, connect } from 'mongoose';
-import { Address, Script as PWScript, AddressPrefix, HashType, AddressType, CkbIndexer, LockType, OutPoint, parseAddress, LumosConfigs } from "@lay2/pw-core";
-import { CONFIG } from "./config";
-import { logger } from "./logger";
-
+import PWCore, { Address, Script as PWScript, ChainID, CHAIN_SPECS, AddressPrefix, HashType, AddressType, CkbIndexer, LockType, OutPoint, parseAddress, LumosConfigs } from "@lay2/pw-core";
 import {
   molecule,
   number,
@@ -19,8 +16,22 @@ import type {
   Input
 } from "@ckb-lumos/base/lib/api";
 
+import { CONFIG, BRIDGING_CLASS_DICT } from "./config";
+import { logger } from "./logger";
+
 import { getTransactionWithStatus, getMultiTransactions } from "./rpc"
-import { BridgingNFT, CkbIndexerGroupedTransaction, BridgingStatus, BridgingTransaction, BRIDGING_CLASS_DICT } from "./types"
+import { 
+  BridgingNFT, 
+  CkbIndexerGroupedTransaction, 
+  BridgingStatus, 
+  BridgingTransaction, 
+} from "./types"
+
+if(CONFIG.CHAIN_NETWORK === 'mainnet') {
+  PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb])
+} else {
+  PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb_testnet])
+}
 
 const MNFTArgs = molecule.struct(
   {
@@ -43,7 +54,12 @@ const EXPECTED_ADDRESS_CELL_DATA_LENGTH = MNFT_TYPE_ARGS_LENGTH + ETHEREUM_ADDRE
 class BridgingNFTs {
   readonly bridgingTokens: BridgingNFT[]
   readonly l2ReceivingAddress: string | null
-
+  static BridgeAddress: Address = new Address(
+    CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS, // CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
+    AddressType.eth,
+    null,
+    LockType.pw // LockType.pw
+  )
   constructor(cells: Cell[], inputs: Input[]) {
     this.bridgingTokens = BridgingNFTs.getBridgingTokens(cells)
     this.l2ReceivingAddress = BridgingNFTs.getL2ReceivingAddress(cells)
@@ -70,7 +86,10 @@ class BridgingNFTs {
     return uniqAddrs[0]
   }
   static isMNFTCell(cell: Cell) {
-    if(cell.cell_output.type && cell.cell_output.type.code_hash === CONFIG.MNFT_TYPE_CODE_HASH) {
+    if(cell.cell_output.type 
+      && cell.cell_output.type.code_hash === CONFIG.MNFT_TYPE_CODE_HASH
+      && _.isEqual(BridgingNFTs.BridgeAddress.toLockScript().serializeJson(), cell.cell_output.lock)
+    ) {
       const { issuerId } = MNFTArgs.unpack(bytes.bytify(cell.cell_output.type.args))
       const { code_hash, args } = cell.cell_output.type
       return code_hash === CONFIG.MNFT_TYPE_CODE_HASH && issuerId === CONFIG.NERVAPE_MNFT_ISSUER_ID
@@ -84,6 +103,7 @@ class BridgingNFTs {
       if(!BRIDGING_CLASS_DICT[classId]) throw new Error(`Invalid class id ${classId}`);
       
       return {
+        from_chain_class_name: BRIDGING_CLASS_DICT[classId].from_chain_class_name,
         from_chain_class_id: classId,
         from_chain_token_id: tokenId,
         to_chain_class_type: BRIDGING_CLASS_DICT[classId].to_chain_class_type,
@@ -103,13 +123,6 @@ class BridgingNFTs {
 }
 
 export class BridgingTransactionParser {
-    // constructor(public address = new Address(
-    //     CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
-    //     AddressType.ckb,
-    //     null,
-    //     LockType.pw
-    //   )) {
-    // }
 
     async connectToDB() {
       await connect(CONFIG.MONGODB_CONNECTION_URL);
@@ -123,10 +136,10 @@ export class BridgingTransactionParser {
     public async start() {
       await this.connectToDB()
       while (true) {
-        const dbTx = await BridgingTransaction.findOne({ status: BridgingStatus.FROM_CHAIN_COMMITTED }).sort({ block_number: "desc" })
+        const dbTx = await BridgingTransaction.findOne({ status: BridgingStatus.FROM_CHAIN_COMMITTED }).sort({ submitted_at: "desc" })
         if(!dbTx) {
           // console.debug("No bridging transaction found")
-          await this.sleep() 
+          await this.sleep()
           continue
         }
 

@@ -10,7 +10,7 @@ export type CkbIndexerGroupedTransaction = {
 }
 
 export enum BridgingStatus {
-	FROM_CHAIN_COMMITTED = "FROM_CHAIN_COMMITTED",
+	FROM_CHAIN_COMMITTED = "FROM_CHAIN_COMMITTED", // 
 	FROM_CHAIN_INVALID = "FROM_CHAIN_INVALID",
 	BRIDGING  = "BRIDGING",
 	TO_CHAIN_MINTING  = "TO_CHAIN_MINTING",
@@ -32,24 +32,10 @@ export interface BridgingNFT {
 
 export interface BridgingClassDict {
   [from_chain_class_id: number]: {
-    to_chain_class_type: string, 
+    from_chain_class_name?: string
+    to_chain_class_type: string
     to_chain_class_id: number
   }
-}
-
-export const BRIDGING_CLASS_DICT: BridgingClassDict = {
-  12: { to_chain_class_type: 'character', to_chain_class_id: 18 },
-  1: { to_chain_class_type: 'character', to_chain_class_id: 2 },
-  2: { to_chain_class_type: 'character', to_chain_class_id: 3 },
-  3: { to_chain_class_type: 'character', to_chain_class_id: 4 },
-  4: { to_chain_class_type: 'character', to_chain_class_id: 5 },
-  5: { to_chain_class_type: 'character', to_chain_class_id: 6 },
-  6: { to_chain_class_type: 'character', to_chain_class_id: 7 },
-  7: { to_chain_class_type: 'scene', to_chain_class_id: 2 },
-  8: { to_chain_class_type: 'character', to_chain_class_id: 8 },
-  9: { to_chain_class_type: 'character', to_chain_class_id: 9 },
-  10: { to_chain_class_type: 'character', to_chain_class_id: 10 },
-  11: { to_chain_class_type: 'character', to_chain_class_id: 11 },
 }
 
 export const BridgingTransaction = model('BridgingTransaction', new Schema({
@@ -64,6 +50,7 @@ export const BridgingTransaction = model('BridgingTransaction', new Schema({
   submitted_at: Number,
   completed_at: Number,
   tokens: [{
+    from_chain_class_name: String,
     from_chain_class_id: Number,
     from_chain_token_id: Number,
     to_chain_class_type: String,
