@@ -46,6 +46,10 @@ export const BRIDGING_CLASS_DICT: BridgingClassDict = {
   5: { to_chain_class_type: 'character', to_chain_class_id: 6 },
   6: { to_chain_class_type: 'character', to_chain_class_id: 7 },
   7: { to_chain_class_type: 'scene', to_chain_class_id: 2 },
+  8: { to_chain_class_type: 'character', to_chain_class_id: 8 },
+  9: { to_chain_class_type: 'character', to_chain_class_id: 9 },
+  10: { to_chain_class_type: 'character', to_chain_class_id: 10 },
+  11: { to_chain_class_type: 'character', to_chain_class_id: 11 },
 }
 
 export const BridgingTransaction = model('BridgingTransaction', new Schema({
