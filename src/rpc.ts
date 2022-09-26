@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import type {
-  TransactionWithStatus
+  TransactionWithStatus, Header
 } from "@ckb-lumos/base/lib/api";
 import { Address } from "@lay2/pw-core";
 
@@ -99,3 +99,29 @@ export async function getBridgingTransactions(address: Address): Promise<CkbInde
   const transactions = data.result.objects as CkbIndexerGroupedTransaction[];
   return transactions.filter(t => t.cells.filter(c => c[0] === "output").length >= 2)
 }
+
+export async function getHeader(hash: string | undefined) : Promise<Header> {
+  const requestBody = {
+    id: 2,
+    jsonrpc: "2.0",
+    method: "get_header",
+    params: [ hash ],
+  };
+
+  const data = await request(CONFIG.CKB_NODE_RPC_URL, JSON.stringify(requestBody))
+
+  return data.result as Header
+}
+
+export async function getTipBlockNumber(): Promise<number> {
+  const requestBody = {
+    id: 2,
+    jsonrpc: "2.0",
+    method: "get_tip_block_number",
+    params: [],
+  };
+
+  const data = await request(CONFIG.CKB_NODE_RPC_URL, JSON.stringify(requestBody))
+
+  return parseInt(data.result, 16)
+} 

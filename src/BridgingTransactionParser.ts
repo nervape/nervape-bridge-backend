@@ -19,7 +19,12 @@ import type {
 import { CONFIG, BRIDGING_CLASS_DICT } from "./config";
 import { logger } from "./logger";
 
-import { getTransactionWithStatus, getMultiTransactions } from "./rpc"
+import { 
+  getTransactionWithStatus, 
+  getMultiTransactions,
+  getHeader,
+  getTipBlockNumber
+} from "./rpc"
 import { 
   BridgingNFT, 
   CkbIndexerGroupedTransaction, 
@@ -50,6 +55,8 @@ const MNFTArgs = molecule.struct(
 const MNFT_TYPE_ARGS_LENGTH = 40;
 const ETHEREUM_ADDRESS_LENGTH = 40;
 const EXPECTED_ADDRESS_CELL_DATA_LENGTH = MNFT_TYPE_ARGS_LENGTH + ETHEREUM_ADDRESS_LENGTH + 2; // 2 for 0x    
+const CONFIRMATION_BLOCKS = 6
+
 
 class BridgingNFTs {
   readonly bridgingTokens: BridgingNFT[]
@@ -148,8 +155,23 @@ export class BridgingTransactionParser {
         const { transaction, tx_status } = await getTransactionWithStatus(dbTx.from_chain_tx_hash)
         if(tx_status.status !== 'committed') {
           console.log("transaction %s is not committed, status = %s", dbTx.from_chain_tx_hash, tx_status.status)
-          await this.sleep() 
+          await this.sleep()
           continue
+        } else {
+          if(!dbTx.from_chain_block_number) {
+            const header = await getHeader(tx_status.block_hash)
+            dbTx.from_chain_block_number = parseInt(header.number)
+            await dbTx.save()
+            console.log("Saved from_chain_block_number = %d", parseInt(header.number))
+            continue
+          } else {
+            const tip_block_number = await getTipBlockNumber()
+            if(tip_block_number - dbTx.from_chain_block_number < CONFIRMATION_BLOCKS) {
+              console.log("waiting for confirmation, targetBlockNumber = %d, currentBlockNumber = %d", dbTx.from_chain_block_number + 6, tip_block_number)
+              await this.sleep()
+              continue
+            }
+          }
         }
 
         const cells = transaction.outputs.map((output, i) => {
