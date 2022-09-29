@@ -31,14 +31,6 @@ export async function getTransactionWithStatus(hash?: string): Promise<Transacti
     method: "get_transaction",
     params: [ hash ],
   };
-  // const response = await fetch(CONFIG.CKB_NODE_RPC_URL, {
-  //   method: "post",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: JSON.stringify(requestBody),
-  //   agent: getAgent()
-  // });
-
-  // const data = await response.json();
 
   const data = await request(CONFIG.CKB_NODE_RPC_URL, JSON.stringify(requestBody))
 
@@ -54,13 +46,6 @@ export async function getMultiTransactions(hashes: string[]): Promise<Transactio
         params: [ hash ],
       }
     })
-    // const response = await fetch(CONFIG.CKB_NODE_RPC_URL, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(requestBody),
-    //   agent: getAgent()
-    // });
-    // const data = await response.json();
 
     const data = await request(CONFIG.CKB_NODE_RPC_URL, JSON.stringify(requestBody))
     return data.map((result: any) => result.result as TransactionWithStatus)
@@ -87,13 +72,7 @@ export async function getBridgingTransactions(address: Address): Promise<CkbInde
       "0x64" // 100
     ]
   }
-  // const response = await fetch(CONFIG.CKB_INDEXER_RPC_URL, {
-  //   method: "POST",
-  //   headers: { "Content-Type": "application/json" },
-  //   body: requestBody,
-  //   agent: getAgent()
-  // });
-  // const data = await response.json();
+
   const data = await request(CONFIG.CKB_INDEXER_RPC_URL, JSON.stringify(requestBody))
 
   const transactions = data.result.objects as CkbIndexerGroupedTransaction[];
