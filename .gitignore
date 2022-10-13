@@ -2,7 +2,7 @@ node_modules/
 lib
 data
 .env
-.env.deployment
+.env.dev
 .env.production
 logs
 build

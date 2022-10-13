@@ -30,67 +30,80 @@ const TESTNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
   1: {
       from_chain_class_name: "Nervape Test 007",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 2 
+      to_chain_class_id: 2,
+      to_chain_type_id: 1
   },
   2: { 
       from_chain_class_name: "",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 3 
+      to_chain_class_id: 3,
+      to_chain_type_id: 1
   },
   3: { 
       from_chain_class_name: "",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 4 
+      to_chain_class_id: 4,
+      to_chain_type_id: 1
   },
   4: { 
       from_chain_class_name: "",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 5 
+      to_chain_class_id: 5,
+      to_chain_type_id: 1,
   },
   5: { 
       from_chain_class_name: "",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 6 
+      to_chain_class_id: 6,
+      to_chain_type_id: 1,
   },
   6: { 
       from_chain_class_name: "",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 7 
+      to_chain_class_id: 7,
+      to_chain_type_id: 1, 
   },
   7: { 
       from_chain_class_name: "",
       to_chain_class_type: 'scene', 
-      to_chain_class_id: 2 
+      to_chain_class_id: 2,
+      to_chain_type_id: 4
   },
   8: { 
       from_chain_class_name: "Nervape 3D",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 8 
+      to_chain_class_id: 8,
+      to_chain_type_id: 1
   },
   9: { 
       from_chain_class_name: "2022-04-27-16-48-12.280-mnft",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 9 
+      to_chain_class_id: 9,
+      to_chain_type_id: 1
   },
   10: { 
       from_chain_class_name: "mNFT-test-4",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 10 
+      to_chain_class_id: 10,
+      to_chain_type_id: 1
   },
   11: { 
       from_chain_class_name: "Nervape / Mirana Special",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 11 
+      to_chain_class_id: 11,
+      to_chain_type_id: 9 
   },
   12: { 
       from_chain_class_name: "nervape test nft",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 18 
+      to_chain_class_id: 18,
+      to_chain_type_id: 1
   },
   13: { 
       from_chain_class_name: "Magic Ball",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 14 
+      to_chain_class_id: 14,
+      to_chain_type_id: 1
   },
 }
 
@@ -105,44 +118,51 @@ const TESTNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
 // 0x34d5b504e5b30b88843462146da44a92be0ed08300000004 Nervape / GROOVY NFTer
 // 0x34d5b504e5b30b88843462146da44a92be0ed08300000003 Nervape / GROOVY Miner
 // 0x34d5b504e5b30b88843462146da44a92be0ed08300000002 Nervape / GROOVY Whale
-// 0x34d5b504e5b30b88843462146da44a92be0ed08300000000 Nervape / GROOVY Rookie
 // 0x34d5b504e5b30b88843462146da44a92be0ed08300000001 Nervape / GROOVY Developer
+// 0x34d5b504e5b30b88843462146da44a92be0ed08300000000 Nervape / GROOVY Rookie
 
 const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
   0: { 
       from_chain_class_name: "Nervape / GROOVY Rookie", 
       to_chain_class_type: 'character', 
-      to_chain_class_id: 1 
+      to_chain_class_id: 1,
+      to_chain_type_id: 1
   },
   1: {
       from_chain_class_name: "Nervape / GROOVY Developer",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 2 
+      to_chain_class_id: 2,
+      to_chain_type_id: 1
   },
   2: { 
       from_chain_class_name: "Nervape / GROOVY Whale",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 3 
+      to_chain_class_id: 3,
+      to_chain_type_id: 1
   },
   3: { 
       from_chain_class_name: "Nervape / GROOVY Miner",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 4 
+      to_chain_class_id: 4,
+      to_chain_type_id: 1
   },
   4: { 
       from_chain_class_name: "Nervape / GROOVY NFTer",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 5 
+      to_chain_class_id: 5,
+      to_chain_type_id: 1
   },
   5: { 
       from_chain_class_name: "Nervape / GROOVY Researcher",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 6 
+      to_chain_class_id: 6,
+      to_chain_type_id: 1 
   },
   6: { 
       from_chain_class_name: "Nervape / GROOVY DeFier",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 7 
+      to_chain_class_id: 7,
+      to_chain_type_id: 1 
   },
 
 
@@ -150,12 +170,14 @@ const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
   7: { 
       from_chain_class_name: "Groovy Party",
       to_chain_class_type: 'scene', 
-      to_chain_class_id: 1 
+      to_chain_class_id: 1,
+      to_chain_type_id: 4
   },
   8: { 
       from_chain_class_name: "Nervape / Story 001",
       to_chain_class_type: 'scene', 
-      to_chain_class_id: 2 
+      to_chain_class_id: 2,
+      to_chain_type_id: 4
   },
   // [------------- scene -------------]
 
@@ -164,19 +186,22 @@ const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
   9: { 
       from_chain_class_name: "Nervape / B-Book",
       to_chain_class_type: 'item', 
-      to_chain_class_id: 1 
+      to_chain_class_id: 1,
+      to_chain_type_id: 3
   },
   10: { 
       from_chain_class_name: "Nervape / B-Boat",
       to_chain_class_type: 'item', 
-      to_chain_class_id: 10 
+      to_chain_class_id: 2,
+      to_chain_type_id: 3
   },
   // ------------- item --------------]
 
   11: { 
       from_chain_class_name: "Nervape / Mirana Special",
       to_chain_class_type: 'character', 
-      to_chain_class_id: 8 
+      to_chain_class_id: 8,
+      to_chain_type_id: 9
   },
 }
 

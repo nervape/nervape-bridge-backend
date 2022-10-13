@@ -35,6 +35,7 @@ export interface BridgingClassDict {
     from_chain_class_name?: string
     to_chain_class_type: string
     to_chain_class_id: number
+    to_chain_type_id: number
   }
 }
 

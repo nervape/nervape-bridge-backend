@@ -33,7 +33,7 @@ import {
 } from "./types"
 
 if(CONFIG.CHAIN_NETWORK === 'mainnet') {
-  PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb])
+  PWCore.setChainId(ChainID.ckb, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb])
 } else {
   PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb_testnet])
 }
@@ -104,6 +104,10 @@ class BridgingNFTs {
     return false
   }
 
+  static calcL2TokenId(typeId: number, classId: number, tokenNumber: number) {
+    return typeId * 10000000 + classId * 10000 + tokenNumber + 1
+  }
+
   static getBridgingTokens(cells: Cell[]) {
     return cells.filter(cell => cell.cell_output.type && BridgingNFTs.isMNFTCell(cell)).map(cell => {
       const { issuerId, classId, tokenId } = MNFTArgs.unpack(bytes.bytify(cell.cell_output.type?.args || ''))
@@ -114,7 +118,7 @@ class BridgingNFTs {
         from_chain_class_id: classId,
         from_chain_token_id: tokenId,
         to_chain_class_type: BRIDGING_CLASS_DICT[classId].to_chain_class_type,
-        to_chain_token_id: BRIDGING_CLASS_DICT[classId].to_chain_class_id * 10000 + tokenId,
+        to_chain_token_id: BridgingNFTs.calcL2TokenId(BRIDGING_CLASS_DICT[classId].to_chain_type_id, BRIDGING_CLASS_DICT[classId].to_chain_class_id, tokenId)
       }
     })
   }
