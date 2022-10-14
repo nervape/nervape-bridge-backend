@@ -203,6 +203,22 @@ const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
       to_chain_class_id: 8,
       to_chain_type_id: 9
   },
+
+  //[------------- test --------------
+  12: { 
+      from_chain_class_name: "Nervape / BoBoBear / Orange",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 1,
+      to_chain_type_id: 1
+  },
+
+  13: { 
+      from_chain_class_name: "Nervape / BoBoBear / Purple",
+      to_chain_class_type: 'character', 
+      to_chain_class_id: 2,
+      to_chain_type_id: 1
+  },
+  // -------------- test ---------------]
 }
 
 export const BRIDGING_CLASS_DICT = process.env.CHAIN_NETWORK === "mainnet" ? MAINNET_BRIDGING_CLASS_DICT : TESTNET_BRIDGING_CLASS_DICT
