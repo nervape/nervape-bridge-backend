@@ -197,12 +197,16 @@ const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
   },
   // ------------- item --------------]
 
+  //[------------- special --------------
   11: { 
       from_chain_class_name: "Nervape / Mirana Special",
-      to_chain_class_type: 'character', 
+      to_chain_class_type: 'special', 
       to_chain_class_id: 8,
       to_chain_type_id: 9
   },
+  //------------- special ---------------]
+
+
 
   //[------------- test --------------
   12: { 
@@ -218,6 +222,27 @@ const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
       to_chain_class_id: 2,
       to_chain_type_id: 1
   },
+
+  14: {
+      from_chain_class_name: "BoBoBear’s Burger / Gold",
+      to_chain_class_type: 'special', 
+      to_chain_class_id: 1,
+      to_chain_type_id: 9
+  },
+
+  15: {
+      from_chain_class_name: "Sock / Beige",
+      to_chain_class_type: 'item', 
+      to_chain_class_id: 1,
+      to_chain_type_id: 3
+  },
+
+  16: {
+      from_chain_class_name: "Crystal Ball / White",
+      to_chain_class_type: 'scene', 
+      to_chain_class_id: 1,
+      to_chain_type_id: 4
+  }
   // -------------- test ---------------]
 }
 

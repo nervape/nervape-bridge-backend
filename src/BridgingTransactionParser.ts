@@ -17,7 +17,6 @@ import type {
 } from "@ckb-lumos/base/lib/api";
 
 import { CONFIG, BRIDGING_CLASS_DICT } from "./config";
-import { logger } from "./logger";
 
 import { 
   getTransactionWithStatus, 
@@ -33,9 +32,9 @@ import {
 } from "./types"
 
 if(CONFIG.CHAIN_NETWORK === 'mainnet') {
-  PWCore.setChainId(ChainID.ckb, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb])
+  PWCore.setChainId(ChainID.ckb, CHAIN_SPECS.Lina)
 } else {
-  PWCore.setChainId(ChainID.ckb_testnet, [CHAIN_SPECS.Lina, CHAIN_SPECS.Aggron][ChainID.ckb_testnet])
+  PWCore.setChainId(ChainID.ckb_testnet, CHAIN_SPECS.Aggron)
 }
 
 const MNFTArgs = molecule.struct(

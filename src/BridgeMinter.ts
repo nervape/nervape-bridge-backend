@@ -1,11 +1,8 @@
 import { providers, Contract, ContractFactory, constants, Wallet, ContractReceipt } from 'ethers';
 import { connect } from 'mongoose';
-// import { MNFTBridgeABI } from './artifacts/MNFTBridgeArtifact';
-// import { MNFTClassContractABI, MNFTClassContractBytecode } from './artifacts/MNFTClassContractArtifact';
 import BridgeMinterAbi from "./artifacts/BridgeMinter.json"
 import { BridgingStatus, BridgingTransaction } from "./types"
 import { CONFIG } from './config';
-// import { logger } from './logger';
 
 
 export class BridgeMinter {
@@ -43,12 +40,13 @@ export class BridgeMinter {
         const characterIds = dbTx.tokens.filter(t => t.to_chain_class_type === 'character').map(t => t.to_chain_token_id || 0)
         const sceneIds = dbTx.tokens.filter(t => t.to_chain_class_type === 'scene').map(t => t.to_chain_token_id || 0)
         const itemIds = dbTx.tokens.filter(t => t.to_chain_class_type === 'item').map(t => t.to_chain_token_id || 0)
+        const specialIds = dbTx.tokens.filter(t => t.to_chain_class_type === 'special').map(t => t.to_chain_token_id || 0)
         const toAddress = dbTx.to_chain_address || ''
 
-        console.log("tokenIds = ", characterIds, sceneIds, itemIds)
+        console.log("tokenIds = ", characterIds, sceneIds, itemIds, specialIds)
 
         try {
-            const receipt = await this.mintMany(toAddress, characterIds, sceneIds, itemIds)
+            const receipt = await this.mintMany(toAddress, characterIds, sceneIds, itemIds, specialIds)
             console.log("receipt = ", receipt)
             if(receipt.status) {
                 dbTx.status = BridgingStatus.BRIDGED
@@ -67,8 +65,8 @@ export class BridgeMinter {
       }
     }
 
-    async mintMany(toAddress: string, characterIds: number[], sceneIds: number[], itemIds: number[]): Promise<ContractReceipt> {
-        const tx = await this.bridgeContract.mintMany(toAddress, characterIds, sceneIds, itemIds)
+    async mintMany(toAddress: string, characterIds: number[], sceneIds: number[], itemIds: number[], specialIds: number[]): Promise<ContractReceipt> {
+        const tx = await this.bridgeContract.mintMany(toAddress, characterIds, sceneIds, itemIds, specialIds)
         const receipt = await tx.wait();
         return receipt;
     }
