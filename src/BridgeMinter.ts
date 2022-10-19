@@ -47,7 +47,6 @@ export class BridgeMinter {
 
         try {
             const receipt = await this.mintMany(toAddress, characterIds, sceneIds, itemIds, specialIds)
-            console.log("receipt = ", receipt)
             if(receipt.status) {
                 dbTx.status = BridgingStatus.BRIDGED
                 dbTx.to_chain_block_number = receipt.blockNumber
@@ -56,7 +55,12 @@ export class BridgeMinter {
                 await dbTx.save()
             }
         } catch(error: any) {
-            const reason = error?.error?.reason || error.message
+            // retry in next loop if `noNetwork` 
+            if(error?.event === 'noNetwork') {
+                await this.sleep()
+                continue
+            }
+            const reason = error?.reason || error.message
             console.log(error)
             dbTx.status = BridgingStatus.TO_CHAIN_MINT_FAILED
             dbTx.to_chain_error = reason
