@@ -156,8 +156,13 @@ export class BridgingTransactionParser {
         console.log("processing tx =", dbTx?.from_chain_tx_hash)
 
         const { transaction, tx_status } = await getTransactionWithStatus(dbTx.from_chain_tx_hash)
+
         if(tx_status.status !== 'committed') {
           console.log("transaction %s is not committed, status = %s", dbTx.from_chain_tx_hash, tx_status.status)
+          if(tx_status.status === 'rejected') {
+            dbTx.status = BridgingStatus.FROM_CHAIN_INVALID
+            await dbTx.save()
+          }
           await this.sleep()
           continue
         } else {
