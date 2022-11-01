@@ -57,6 +57,8 @@ export class BridgeMinter {
         } catch(error: any) {
             // retry in next loop if `noNetwork` 
             if(error?.event === 'noNetwork') {
+                dbTx.status = BridgingStatus.BRIDGING
+                await dbTx.save()
                 await this.sleep()
                 continue
             }
