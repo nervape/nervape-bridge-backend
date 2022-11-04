@@ -15,13 +15,22 @@ function getAgent() {
 }
 
 async function request(url: string, body: any) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: body,
-    agent: getAgent()
-  });
-  return await response.json()
+  // max retry 5 times
+  for(let i = 0; i < 5; i++) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: body,
+        agent: getAgent()
+      });
+      return await response.json()
+    } catch(e) {
+      if(i == 4) {
+        throw e
+      }
+    }
+  }
 }
 
 export async function getTransactionWithStatus(hash?: string): Promise<TransactionWithStatus> {

@@ -38,7 +38,6 @@ export class BridgingDetector {
         console.log('Find %d bridging transactions', transactions.length);
 
         for (const transaction of transactions) {
-          console.log("transaction=", transaction.tx_hash)
           const dbTx = await BridgingTransaction.findOne({ from_chain_tx_hash: transaction.tx_hash })
           if(!dbTx) {
             const tx = new BridgingTransaction({
