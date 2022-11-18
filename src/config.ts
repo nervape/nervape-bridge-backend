@@ -209,40 +209,40 @@ const MAINNET_BRIDGING_CLASS_DICT: BridgingClassDict = {
 
 
   //[------------- test --------------
-  12: { 
-      from_chain_class_name: "Nervape / BoBoBear / Orange",
-      to_chain_class_type: 'character', 
-      to_chain_class_id: 1,
-      to_chain_type_id: 1
-  },
+  // 12: { 
+  //     from_chain_class_name: "Nervape / BoBoBear / Orange",
+  //     to_chain_class_type: 'character', 
+  //     to_chain_class_id: 1,
+  //     to_chain_type_id: 1
+  // },
 
-  13: { 
-      from_chain_class_name: "Nervape / BoBoBear / Purple",
-      to_chain_class_type: 'character', 
-      to_chain_class_id: 2,
-      to_chain_type_id: 1
-  },
+  // 13: { 
+  //     from_chain_class_name: "Nervape / BoBoBear / Purple",
+  //     to_chain_class_type: 'character', 
+  //     to_chain_class_id: 2,
+  //     to_chain_type_id: 1
+  // },
 
-  14: {
-      from_chain_class_name: "BoBoBear’s Burger / Gold",
-      to_chain_class_type: 'special', 
-      to_chain_class_id: 1,
-      to_chain_type_id: 9
-  },
+  // 14: {
+  //     from_chain_class_name: "BoBoBear’s Burger / Gold",
+  //     to_chain_class_type: 'special', 
+  //     to_chain_class_id: 1,
+  //     to_chain_type_id: 9
+  // },
 
-  15: {
-      from_chain_class_name: "Sock / Beige",
-      to_chain_class_type: 'item', 
-      to_chain_class_id: 1,
-      to_chain_type_id: 3
-  },
+  // 15: {
+  //     from_chain_class_name: "Sock / Beige",
+  //     to_chain_class_type: 'item', 
+  //     to_chain_class_id: 1,
+  //     to_chain_type_id: 3
+  // },
 
-  16: {
-      from_chain_class_name: "Crystal Ball / White",
-      to_chain_class_type: 'scene', 
-      to_chain_class_id: 1,
-      to_chain_type_id: 4
-  }
+  // 16: {
+  //     from_chain_class_name: "Crystal Ball / White",
+  //     to_chain_class_type: 'scene', 
+  //     to_chain_class_id: 1,
+  //     to_chain_type_id: 4
+  // }
   // -------------- test ---------------]
 }
 

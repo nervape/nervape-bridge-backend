@@ -27,13 +27,13 @@ $ yarn build
 
 ### Start in development
 
-Watching new transactions of bridge address and save new bridging transactions to database.
+Watching new transactions of bridge address and save bridging transactions to database.
 
 ```sh
 $ yarn start:detector
 ```
 
-Parse bridging transaction including target address, L1 token IDs and L2 token IDs
+Parse and validate bridging transaction including target address, L1 token IDs and L2 token IDs
 
 ```sh
 $ yarn start:parser

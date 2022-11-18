@@ -10,6 +10,7 @@ services:
     volumes:
       - ./:/home/node/app
     command: /bin/bash -c "yarn && yarn run build && yarn run start:prod:detector"
+    restart: on-failure:5
   nervape_bridge_parser:
     container_name: nervape_bridge_parser
     image: "node:16"
@@ -20,6 +21,7 @@ services:
     volumes:
       - ./:/home/node/app
     command: /bin/bash -c "yarn && yarn run build && yarn run start:prod:parser"
+    restart: on-failure:5
   nervape_bridge_minter:
     container_name: nervape_bridge_minter
     image: "node:16"
@@ -30,3 +32,4 @@ services:
     volumes:
       - ./:/home/node/app
     command: /bin/bash -c "yarn && yarn run build && yarn run start:prod:minter"
+    restart: on-failure:5

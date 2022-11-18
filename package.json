@@ -1,11 +1,9 @@
 {
-  "name": "mnft-godwoken",
+  "name": "nervape-bridge-backend",
   "version": "0.0.1",
   "license": "MIT",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "files": [
-    "lib/**/*"
+    "src/**/*"
   ],
   "scripts": {
     "build": "tsc",
