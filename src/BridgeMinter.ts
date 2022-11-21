@@ -23,7 +23,6 @@ export class BridgeMinter {
 
     public async start() {
       await connect(CONFIG.MONGODB_CONNECTION_URL);
-      console.log("connected to database")
 
       while (true) {
         const dbTx = await BridgingTransaction.findOne({ status: BridgingStatus.BRIDGING }).sort({ block_number: "desc" })
@@ -55,6 +54,7 @@ export class BridgeMinter {
                 await dbTx.save()
             }
         } catch(error: any) {
+            console.error(error)
             // retry in next loop if `noNetwork` 
             if(error?.event === 'noNetwork') {
                 dbTx.status = BridgingStatus.BRIDGING
@@ -63,7 +63,6 @@ export class BridgeMinter {
                 continue
             }
             const reason = error?.reason || error.message
-            console.log(error)
             dbTx.status = BridgingStatus.TO_CHAIN_MINT_FAILED
             dbTx.to_chain_error = reason
             await dbTx.save()

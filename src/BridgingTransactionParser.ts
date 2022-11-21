@@ -61,7 +61,7 @@ class BridgingNFTs {
   readonly bridgingTokens: BridgingNFT[]
   readonly l2ReceivingAddress: string | null
   static BridgeAddress: Address = new Address(
-    CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS, // CONFIG.LAYER_ONE_BRIDGE_CKB_ADDRESS,
+    CONFIG.LAYER_ONE_BRIDGE_ETH_ADDRESS,
     AddressType.eth,
     null,
     LockType.pw // LockType.pw
@@ -91,6 +91,7 @@ class BridgingNFTs {
     if(uniqAddrs.length > 1) throw Error("Multiple source addresses");
     return uniqAddrs[0]
   }
+  // check if cell is Nervape mNFT type
   static isMNFTCell(cell: Cell) {
     if(cell.cell_output.type 
       && cell.cell_output.type.code_hash === CONFIG.MNFT_TYPE_CODE_HASH
@@ -107,6 +108,7 @@ class BridgingNFTs {
     return typeId * 10000000 + classId * 10000 + tokenNumber + 1
   }
 
+  // Parse the mapping relationship between mNFT cell and L2 tokenId
   static getBridgingTokens(cells: Cell[]) {
     return cells.filter(cell => cell.cell_output.type && BridgingNFTs.isMNFTCell(cell)).map(cell => {
       const { issuerId, classId, tokenId } = MNFTArgs.unpack(bytes.bytify(cell.cell_output.type?.args || ''))
@@ -122,6 +124,7 @@ class BridgingNFTs {
     })
   }
 
+  // Get target L2 address
   static getL2ReceivingAddress(cells: Cell[]): string | null {
     for(const cell of cells) {
       if(cell.data.length !== EXPECTED_ADDRESS_CELL_DATA_LENGTH) continue
@@ -136,7 +139,6 @@ export class BridgingTransactionParser {
 
     async connectToDB() {
       await connect(CONFIG.MONGODB_CONNECTION_URL);
-      console.log("connected to database")
     }
 
     async sleep() {
@@ -148,7 +150,6 @@ export class BridgingTransactionParser {
       while (true) {
         const dbTx = await BridgingTransaction.findOne({ status: BridgingStatus.FROM_CHAIN_COMMITTED }).sort({ submitted_at: "desc" })
         if(!dbTx) {
-          // console.debug("No bridging transaction found")
           await this.sleep()
           continue
         }
