@@ -58,3 +58,23 @@ export const BridgingTransaction = model('BridgingTransaction', new Schema({
     to_chain_token_id: Number,
   }]
 }));
+
+
+export enum ClaimStatus {
+  PENDING = "PENDING",
+  MINTING = "MINTING",
+  MINTED  = "MINTED",
+  FAILED  = "FAILED"
+}
+export const PhysicalNftClaim = model('PhysicalNftClaim', new Schema({
+  code: String,
+  used: Boolean,
+  address: String,
+  token_id: Number,
+  submitted_at: Number,
+  claim_block_number: Number,
+  claim_tx_hash: String,
+  status: String,
+  completed_at: Number,
+  claim_error: String
+}));

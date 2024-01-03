@@ -10,9 +10,11 @@
     "start:detector": "ts-node src/scripts/detector.ts",
     "start:parser": "ts-node src/scripts/parser.ts",
     "start:minter": "ts-node src/scripts/minter.ts",
+    "start:claim": "ts-node src/scripts/claim.ts",
     "start:prod:detector": "node build/scripts/detector.js",
     "start:prod:parser": "node build/scripts/parser.js",
     "start:prod:minter": "node build/scripts/minter.js",
+    "start:prod:claim": "node build/scripts/claim.js",
     "test": "jest"
   },
   "dependencies": {

@@ -267,5 +267,8 @@ export const CONFIG = {
     GODWOKEN_CONTRACTS: {
         BRIDGE: process.env.GODWOKEN_NERVAPE_BRIDGE_CONTRACT as string
     },
-    EVM_PRIVATE_KEY
+    EVM_PRIVATE_KEY,
+
+    ETH_PRC: process.env.ETH_PRC as string,
+    NERVAPE_PHYSICAL_CONTRACT: process.env.NERVAPE_PHYSICAL_CONTRACT as string
 }
